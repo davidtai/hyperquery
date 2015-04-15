@@ -21,6 +21,12 @@ task 'test', 'Run tests', ->
     .test'
     ]
 
+task 'example', 'Run example', ->
+  exec [
+    'cake build'
+    'node example/serve.js'
+  ]
+
 task 'publish', 'Publish project', ->
   exec [
     'cake build'
