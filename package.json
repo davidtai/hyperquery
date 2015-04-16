@@ -32,5 +32,8 @@
     "source-map-support": "^0.2.10",
     "underscore": "^1.8.3",
     "virtual-dom": "^2.0.1"
+  },
+  "devDependencies": {
+    "postmortem": "^0.1.8"
   }
 }
