@@ -1,6 +1,7 @@
 VNode = require 'virtual-dom/vnode/vnode'
 VText = require 'virtual-dom/vnode/vtext'
 h     = require 'virtual-dom/h'
+udc   = require 'udc'
 
 {walk} = require './utils'
 
@@ -63,6 +64,16 @@ patch = ->
 
   VNode::removeAttribute = (key) ->
     delete @properties[key]
+
+  VNode::cloneNode = (deep) ->
+    if deep
+      return udc @
+
+    node = {}
+    for k,v of @
+      node[k] = v
+
+    return node
 
 module.exports =
   patch: patch
