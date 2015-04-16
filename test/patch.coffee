@@ -35,9 +35,10 @@ describe 'patch', ->
   attr1 = h 'span.attr1'
   attr2 = h 'span.attr2'
   attr3 = h 'span.attr3'
+  ul    = h 'ul'
 
   # construct a tree
-  tree  = h 'div.foo#some-id', [span, input, div, attr1, attr2, attr3]
+  tree  = h 'div.foo#some-id', [span, input, div, attr1, attr2, attr3, ul]
 
   it 'should add getElementById shim to vdom', ->
     $node = Zepto(tree).find '#some-input'
@@ -74,3 +75,8 @@ describe 'patch', ->
     $node.attr 'x', 3
     $node.removeAttr 'x'
     expect($node.attr 'x').to.eq undefined
+
+  it 'should support adjacency operators', ->
+    $node = Zepto(tree).find 'ul'
+    $node.append h 'li'
+    console.log $node
