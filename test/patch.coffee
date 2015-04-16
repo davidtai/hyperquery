@@ -1,7 +1,4 @@
-chai = require 'chai'
-chai.config.includeStack = true
-chai.should()
-{expect} = chai
+{expect} = require 'chai'
 
 {patched, patchedWindow} = require '../src/patch'
 {VNode, VText, h} = patched()
