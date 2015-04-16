@@ -7,7 +7,7 @@ udc   = require 'udc'
 
 qsaSupportedRe = /^[#.][\w-]*$/
 
-patch = ()->
+patch = ->
   # Always an element node
   VNode::nodeType = 1
   VNode::style = {}

@@ -21,6 +21,9 @@ task 'test', 'Run tests', ->
     .test'
     ]
 
+task 'test-browser', 'Run tests in browser', ->
+  exec 'node_modules/.bin/mocha-http test'
+
 task 'example', 'Run example', ->
   exec [
     'cake build'
