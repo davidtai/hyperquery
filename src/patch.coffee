@@ -54,7 +54,14 @@ patch = ()->
             return [node]
           return []
 
-    throw new Error('document.querySelectorAll is not fully implemented')
+  VNode::setAttribute = (key, value) ->
+    @properties[key] = value
+
+  VNode::getAttribute = (key) ->
+    return @properties[key]
+
+  VNode::removeAttribute = (key) ->
+    delete @properties[key]
 
 patchedWindow = (win)->
   if win? && win.getComputedStyle?
