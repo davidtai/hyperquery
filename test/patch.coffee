@@ -23,11 +23,19 @@ vm.runInContext zeptoCode, sandbox
 {VNode, VText, h} = patched()
 
 describe 'patch', ->
-  it 'should make virtual-dom zepto-compatible', ->
-    tree = h 'div.foo#some-id', [
-        h 'span', 'some text' ,
-        h 'input#some-input', type: 'text', value: 'foo'
-    ]
+  tree = h 'div.foo#some-id', [
+      h 'span', 'some text' ,
+      h 'input#some-input', type: 'text', value: 'foo'
+  ]
 
-    input = Zepto(tree).find '#some-input'
-    input[0].tagName.should.eq 'INPUT'
+  it 'should add getElementById shim to vdom', ->
+    $node = Zepto(tree).find '#some-input'
+    $node[0].tagName.should.eq 'INPUT'
+
+  it 'should add getElementsByTagName shim to vdom', ->
+    $node = Zepto(tree).find 'span'
+    $node[0].tagName.should.eq 'SPAN'
+
+  it 'should add getElementsByClassName shim to vdom', ->
+    $node = Zepto(tree).find '.foo'
+    $node[0].tagName.should.eq 'DIV'

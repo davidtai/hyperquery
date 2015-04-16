@@ -16,6 +16,21 @@ patch = ->
         return false
     return result
 
+  VNode::getElementsByClassName = (className) ->
+    result = []
+    walk @, (node) ->
+      if node.properties.className == className
+        result.push node
+    return result
+
+  VNode::getElementsByTagName = (tagName) ->
+    result = []
+    tagName = tagName.toUpperCase()
+    walk @, (node) ->
+      if node.tagName == tagName
+        result.push node
+    return result
+
 module.exports =
   patch: patch
   patched: ->
