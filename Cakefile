@@ -13,11 +13,11 @@ task 'test', 'Run tests', ->
     'cake build'
     'NODE_ENV=test
     node_modules/.bin/mocha
-    --compilers coffee:coffee-script/register
-    --reporter spec
     --colors
+    --reporter spec
     --timeout 60000
-    --require test/_helper.js
+    --compilers coffee:coffee-script/register
+    --require postmortem/register
     .test'
     ]
 

@@ -20,17 +20,20 @@
   "author": "David Tai",
   "license": "ISC",
   "dependencies": {
+    "virtual-dom": "^2.0.1"
+  },
+  "devDependencies": {
     "cake": "^0.1.1",
     "chai": "^2.2.0",
     "coffee-script": "1.9.0",
+    "domino": "^1.0.18",
     "executive": "^0.4.7",
     "express": "^4.12.3",
     "html2hscript": "^1.0.4",
-    "mocha": "^2.2.1",
+    "mocha": "^2.2.4",
     "npm-zepto": "^1.1.7",
+    "postmortem": "^0.1.8",
     "requisite": "^1.9.1",
-    "source-map-support": "^0.2.10",
-    "underscore": "^1.8.3",
-    "virtual-dom": "^2.0.1"
+    "virtual-hyperscript": "^4.6.0"
   }
 }
