@@ -1,8 +1,11 @@
 {expect} = require 'chai'
 
-{patched, patchedWindow} = require '../src/patch'
+{patched, patchWindow, patch$} = require '../src/patch'
+patchWindow(window) if window?
+
 {VNode, VText, h} = patched()
 Zepto = require '../src/zepto'
+patch$(Zepto)
 
 describe 'patch', ->
   # few random elements we'll search for
@@ -30,11 +33,14 @@ describe 'patch', ->
     $node = Zepto(tree).find '.bar'
     expect($node[0]).to.eql div
 
-  it 'should patch getComputedStyle on window', ->
-    display = Zepto(style).css 'display'
-    top = Zepto(style).css 'top'
-    expect(display).to.eql 'table'
-    expect(top).to.eql '100px'
+  if window?
+    it 'should patch getComputedStyle on window', ->
+      display = Zepto(style).css 'display'
+      top = Zepto(style).css 'top'
+      expect(display).to.eql 'table'
+      expect(top).to.eql '100px'
+  else
+    it.skip 'should patch getComputedStyle on window', ->
 
   it 'should add setAttribute shim to vdom', ->
     $node = Zepto(tree).find '.attr1'

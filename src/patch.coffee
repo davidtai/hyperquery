@@ -74,7 +74,14 @@ patch = ->
 
     return node
 
-patchedWindow = (win)->
+patch$ = ($)->
+  originalContains = $.contains
+  $.contains = (container, contains)->
+    if contains instanceof VNode
+      return false
+    else return originalContains.call(@, container, contains)
+
+patchWindow = (win)->
   if win? && win.getComputedStyle?
     nativeGetComputedStyle = win.getComputedStyle
     win.getComputedStyle = (element, pseudo)->
@@ -95,7 +102,8 @@ patchedWindow = (win)->
 
 module.exports =
   patch: patch
-  patchedWindow: patchedWindow
+  patch$: patch$
+  patchWindow: patchWindow
   patched: (win)->
     patch(win)
 
