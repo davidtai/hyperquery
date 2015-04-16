@@ -1,6 +1,7 @@
 chai = require 'chai'
-# chai.config.includeStack = true
+chai.config.includeStack = true
 chai.should()
+{expect} = chai
 
 zeptoPath = require.resolve 'npm-zepto'
 domino    = require 'domino'
@@ -23,19 +24,22 @@ vm.runInContext zeptoCode, sandbox
 {VNode, VText, h} = patched()
 
 describe 'patch', ->
-  tree = h 'div.foo#some-id', [
-      h 'span', 'some text' ,
-      h 'input#some-input', type: 'text', value: 'foo'
-  ]
+  # few random elements we'll search for
+  div   = h 'div.bar'
+  input = h 'input#some-input', type: 'text', value: 'foo'
+  span  = h 'span', 'some text'
+
+  # construct a tree
+  tree  = h 'div.foo#some-id', [span, input, div]
 
   it 'should add getElementById shim to vdom', ->
     $node = Zepto(tree).find '#some-input'
-    $node[0].tagName.should.eq 'INPUT'
+    expect($node[0]).to.eql input
 
   it 'should add getElementsByTagName shim to vdom', ->
     $node = Zepto(tree).find 'span'
-    $node[0].tagName.should.eq 'SPAN'
+    expect($node[0]).to.eql span
 
   it 'should add getElementsByClassName shim to vdom', ->
-    $node = Zepto(tree).find '.foo'
-    $node[0].tagName.should.eq 'DIV'
+    $node = Zepto(tree).find '.bar'
+    expect($node[0]).to.eql div
