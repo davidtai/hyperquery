@@ -20,7 +20,7 @@ task 'test', 'run tests', (options) ->
     options._proc.kill() if options._proc?
     options._proc = exec "./node_modules/.bin/mocha-http
                          --timeout 5000
-                         #{test}"
+                         test"
   else
     exec "NODE_ENV=test ./node_modules/.bin/mocha
         --colors
