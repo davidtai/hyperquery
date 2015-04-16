@@ -13,7 +13,7 @@ fs        = require 'fs'
 window = domino.createWindow()
 sandbox =
   window: window
-  getComputedStyle: ->
+  getComputedStyle: window.getComputedStyle
 
 vm.createContext sandbox
 zeptoCode = fs.readFileSync zeptoPath, 'utf8'
