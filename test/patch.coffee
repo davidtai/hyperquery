@@ -3,28 +3,9 @@ chai.config.includeStack = true
 chai.should()
 {expect} = chai
 
-zeptoPath = require.resolve 'npm-zepto'
-domino    = require 'domino'
-vm        = require 'vm'
-fs        = require 'fs'
-
 {patched, patchedWindow} = require '../src/patch'
-
-# Create window + use sandbox to safely require Zepto
-window = domino.createWindow()
-
-sandbox =
-  window: window
-  getComputedStyle: window.getComputedStyle
-
-patchedWindow(sandbox)
-
-vm.createContext sandbox
-zeptoCode = fs.readFileSync zeptoPath, 'utf8'
-vm.runInContext zeptoCode, sandbox
-
 {VNode, VText, h} = patched()
-{Zepto} = sandbox
+Zepto = require '../src/zepto'
 
 describe 'patch', ->
   # few random elements we'll search for
