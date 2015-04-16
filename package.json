@@ -20,6 +20,7 @@
   "author": "David Tai",
   "license": "ISC",
   "dependencies": {
+    "udc": "^1.0.1",
     "virtual-dom": "^2.0.1"
   },
   "devDependencies": {
