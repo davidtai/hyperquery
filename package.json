@@ -27,10 +27,10 @@
     "express": "^4.12.3",
     "html2hscript": "^1.0.4",
     "mocha": "^2.2.1",
+    "npm-zepto": "^1.1.7",
     "requisite": "^1.9.1",
     "source-map-support": "^0.2.10",
     "underscore": "^1.8.3",
-    "virtual-dom": "^2.0.1",
-    "vtree-select": "^1.1.1"
+    "virtual-dom": "^2.0.1"
   }
 }

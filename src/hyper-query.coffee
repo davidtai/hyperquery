@@ -1,25 +1,27 @@
-select = require 'vtree-select'
 VNode = require 'virtual-dom/vnode/vnode'
-_ = require 'underscore'
+VirtualText = require 'virtual-dom/vnode/vtext'
+h = require 'virtual-dom/h'
 
-class HyperQuery
-  selector: ''
-  nodes: null
-  constructor: (@nodes = [], @selector = '')->
-    if !_.isArray @nodes
-      @nodes = [@nodes]
+$ = require 'npm-zepto'
 
-  find: (selector)->
-    return new HyperQuery(select(selector)(@node), selector)
+walk = (node, visitor)->
+  if vistor node == false
+    return false
+
+  for child in @children
+    if walk child, visitor == false
+      return false
+
+  return true
+
+VNode.prototype.getElementById = (id)->
+  result = null
+  walk @, (node)->
+    if node.properties.id == id
+      result = node
+      return false
+  return result
 
 module.exports =
-  $: (something, root)->
-    if !something?
-      return new HyperQuery
-    else if _.isString something && root? && root instanceof VNode
-      return new HyperQuery(select(something)(root), selector)
-    else if something instanceof VNode
-      return new HyperQuery('', s)
-
-    return new HyperQuery
-
+  $: $
+  walk: walk

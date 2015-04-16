@@ -29,7 +29,7 @@ this.use = function(routes) {
 this.use(config);
 
 app.use('/app.js', require('requisite').middleware({
-  entry: __dirname + '/../lib/hyper-query.js'
+  entry: __dirname + '/../src/hyper-query.coffee'
 }));
 
 app.listen(process.env.PORT || 9001);
