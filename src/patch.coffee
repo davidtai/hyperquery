@@ -6,9 +6,10 @@ h     = require 'virtual-dom/h'
 
 qsaSupportedRe = /^[#.][\w-]*$/
 
-patch = ->
+patch = ()->
   # Always an element node
   VNode::nodeType = 1
+  VNode::style = {}
 
   VNode::createElement = (type) ->
     h type
@@ -53,12 +54,32 @@ patch = ->
             return [node]
           return []
 
-    throw 'document.querySelectorAll is not fully implemented'
+    throw new Error('document.querySelectorAll is not fully implemented')
+
+patchedWindow = (win)->
+  if win? && win.getComputedStyle?
+    nativeGetComputedStyle = win.getComputedStyle
+    win.getComputedStyle = (element, pseudo)->
+      if element instanceof VNode
+        return {
+          getPropertyValue: (property)->
+            styleStr = element.properties.style
+            if styleStr?
+              styles = styleStr.split ';'
+              for style in styles
+                styleTokens = style.split ':'
+                if styleTokens[0] == property
+                  return styleTokens[1]
+            return
+        }
+      else
+        return nativeGetComputedStyle(element, pseudo)
 
 module.exports =
   patch: patch
-  patched: ->
-    patch()
+  patchedWindow: patchedWindow
+  patched: (win)->
+    patch(win)
 
     VNode: VNode
     VText: VText
