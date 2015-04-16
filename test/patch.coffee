@@ -8,26 +8,30 @@ domino    = require 'domino'
 vm        = require 'vm'
 fs        = require 'fs'
 
-{patched} = require '../src/patch'
+{patched, patchedWindow} = require '../src/patch'
 
 # Create window + use sandbox to safely require Zepto
 window = domino.createWindow()
+
 sandbox =
   window: window
   getComputedStyle: window.getComputedStyle
+
+patchedWindow(sandbox)
 
 vm.createContext sandbox
 zeptoCode = fs.readFileSync zeptoPath, 'utf8'
 vm.runInContext zeptoCode, sandbox
 
-{Zepto} = sandbox
 {VNode, VText, h} = patched()
+{Zepto} = sandbox
 
 describe 'patch', ->
   # few random elements we'll search for
   div   = h 'div.bar'
   input = h 'input#some-input', type: 'text', value: 'foo'
   span  = h 'span', 'some text'
+  style = h 'div', style: 'display:table;top:100px'
   attr1 = h 'span.attr1'
   attr2 = h 'span.attr2'
   attr3 = h 'span.attr3'
@@ -47,6 +51,12 @@ describe 'patch', ->
   it 'should add getElementsByClassName shim to vdom', ->
     $node = Zepto(tree).find '.bar'
     expect($node[0]).to.eql div
+
+  it 'should patch getComputedStyle on window', ->
+    display = Zepto(style).css 'display'
+    top = Zepto(style).css 'top'
+    expect(display).to.eql 'table'
+    expect(top).to.eql '100px'
 
   it 'should add setAttribute shim to vdom', ->
     $node = Zepto(tree).find '.attr1'
