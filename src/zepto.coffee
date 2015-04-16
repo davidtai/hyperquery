@@ -4,6 +4,7 @@ browserZepto = ->
 nodeZepto = ->
   zeptoPath = require.resolve 'npm-zepto'
 
+  # Terrible hack to prevent any of this getting bundled in the client.
   eval """
        domino = require('domino');
        fs     = require('fs');
