@@ -55,7 +55,7 @@ describe 'patch', ->
       display = Zepto(css).css 'display'
       expect(display).to.eql undefined
 
-    it 'should add style.cssText to vdom', ->
+    it 'should add style.cssText shim to vdom', ->
       css = h 'div', style: 'background: red'
       Zepto(css).css 'display', 'none'
       display = Zepto(css).css 'display'
@@ -103,3 +103,22 @@ describe 'patch', ->
     $node3 = Zepto(dumbTree).find 'li'
     expect($node[0]).to.eq $node2[0]
     expect($node3[0]).to.eq undefined
+
+  it 'should add value shim to vdom', ->
+    input = h 'input', value: '100'
+    $node = Zepto(input)
+    expect($node.val()).to.eq '100'
+    $node.val(200)
+    expect($node.val()).to.eq '200'
+
+    select = h 'select', [
+      h 'option', { value: '100', selected: false }
+      h 'option', { value: '200', selected: true }
+      h 'option', { value: '300', selected: false }
+    ]
+
+    $node = Zepto(select)
+    expect($node.val()).to.eq '200'
+    $node.val('300')
+    expect($node.val()).to.eq '300'
+

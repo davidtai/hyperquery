@@ -8,19 +8,21 @@ udc   = require 'udc'
 qsaSupportedRe = /^[#.][\w-]*$/
 
 patch = ->
-  # Always an element node
-  VNode::nodeType           = 1
-  VNode::style              = {}
-  VNode::parentNode         = null
-  VNode::nextSibling        = null
-  VNode::previousSibling    = null
-  VNode::firstChild         = null
-  VNode::lastChild          = null
+  VText::properties = {}
 
-  VNode::createElement = (type) ->
+  # Always an element node
+  VText::nodeType           = VNode::nodeType           = 1
+  VText::style              = VNode::style              = {}
+  VText::parentNode         = VNode::parentNode         = null
+  VText::nextSibling        = VNode::nextSibling        = null
+  VText::previousSibling    = VNode::previousSibling    = null
+  VText::firstChild         = VNode::firstChild         = null
+  VText::lastChild          = VNode::lastChild          = null
+
+  VText::createElement = VNode::createElement = (type) ->
     h type
 
-  VNode::getElementById = (id) ->
+  VText::getElementById = VNode::getElementById = (id) ->
     result = null
     walk @, (node) ->
       unless node.properties?
@@ -30,7 +32,7 @@ patch = ->
         return false
     return result
 
-  VNode::getElementsByClassName = (className) ->
+  VText::getElementsByClassName = VNode::getElementsByClassName = (className) ->
     result = []
     walk @, (node) ->
       unless node.properties?
@@ -39,7 +41,7 @@ patch = ->
         result.push node
     return result
 
-  VNode::getElementsByTagName = (tagName) ->
+  VText::getElementsByTagName = VNode::getElementsByTagName = (tagName) ->
     result = []
     tagName = tagName.toUpperCase()
     walk @, (node) ->
@@ -49,7 +51,7 @@ patch = ->
         result.push node
     return result
 
-  VNode::querySelectorAll = (selector) ->
+  VText::querySelectorAll = VNode::querySelectorAll = (selector) ->
     if qsaSupportedRe.test selector
       switch selector[0]
         when '.'
@@ -60,16 +62,16 @@ patch = ->
             return [node]
           return []
 
-  VNode::setAttribute = (key, value) ->
+  VText::setAttribute = VNode::setAttribute = (key, value) ->
     @properties[key] = value
 
-  VNode::getAttribute = (key) ->
+  VText::getAttribute = VNode::getAttribute = (key) ->
     return @properties[key]
 
-  VNode::removeAttribute = (key) ->
+  VText::removeAttribute = VNode::removeAttribute = (key) ->
     delete @properties[key]
 
-  VNode::cloneNode = (deep) ->
+  VText::cloneNode = VNode::cloneNode = (deep) ->
     if deep
       return udc @
 
@@ -94,7 +96,7 @@ patch = ->
       child.previousSibling = node.children[i-1]
       i++
 
-  VNode::insertBefore = (newElement, referenceElement)->
+  VText::insertBefore = VNode::insertBefore = (newElement, referenceElement)->
     if !referenceElement?
       @children.push newElement
     else
@@ -109,14 +111,14 @@ patch = ->
 
     return newElement
 
-  VNode::appendChild = (node)->
+  VText::appendChild = VNode::appendChild = (node)->
     @children.push node
     setupShimValues node
     setupShimValues @
 
     return node
 
-  VNode::removeChild = (node)->
+  VText::removeChild = VNode::removeChild = (node)->
     i = 0
     for child in @children
       if child == node
@@ -136,7 +138,7 @@ patch = ->
 patch$ = ($)->
   originalContains = $.contains
   $.contains = (container, contains)->
-    if contains instanceof VNode
+    if contains instanceof VNode || element instanceof VText
       return false
     return originalContains.apply @, arguments
 
@@ -147,6 +149,38 @@ patch$ = ($)->
     ret = originalCss.apply @, arguments
     for node in @
       node.properties.style = node.style.cssText
+    return ret
+
+  originalVal = $.fn.val
+  $.fn.val = (value)->
+    for node in @
+      if node.tagName == 'INPUT'
+        #softhook
+        node.value = ''+node.properties.value.value || ''
+      else if node.tagName == 'SELECT'
+        node.multiple = node.properties.multiple || undefined
+        for child in node.children
+          if child.tagName == 'OPTION'
+            child.selected = child.properties.selected || undefined
+            child.value = ''+child.properties.value || ''
+            node.value = child.value if child.selected
+      else
+        node.value = node.properties.value || ''
+    ret = originalVal.apply @, arguments
+    for node in @
+      if node.tagName == 'INPUT'
+        #softhook
+        node.properties.value.value = node.value
+      else if node.tagName == 'SELECT'
+        for child in node.children
+          if child.tagName == 'OPTION'
+            if ret.value instanceof Array
+              child.properties.selected = child.value in ret.value
+            else
+              child.properties.selected = child.value == ret.value
+            child.properties.value = child.value
+      else
+        node.properties.value = node.value
     return ret
 
 patchWindow = (win)->
@@ -160,6 +194,11 @@ patchWindow = (win)->
             value = element.properties.style.match propRE
             if value?
               return value[1]
+            return undefined
+        }
+      else if element instanceof VText
+        return {
+          getPropertyValue: (property)->
             return undefined
         }
       else
