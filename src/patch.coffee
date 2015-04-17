@@ -82,6 +82,9 @@ patch = ->
   setupShimValues= (node)->
     node.style =
       cssText: node.properties.style || ''
+      removeProperty: (property)->
+        propRE = new RegExp property + '\\s*?:.*?(;|$)'
+        node.style.cssText = node.style.cssText.replace propRE, ''
     node.firstChild = node.children[0]
     node.lastChild = node.children[node.children.length - 1]
     i = 0
@@ -115,7 +118,16 @@ patch$ = ($)->
   $.contains = (container, contains)->
     if contains instanceof VNode
       return false
-    else return originalContains.call(@, container, contains)
+    return originalContains.apply @, arguments
+
+  originalCss = $.fn.css
+  $.fn.css = (property, value)->
+    for node in @
+      node.style.cssText = node.properties.style || ''
+    ret = originalCss.apply @, arguments
+    for node in @
+      node.properties.style = node.style.cssText
+    return ret
 
 patchWindow = (win)->
   if win? && win.getComputedStyle?
@@ -124,14 +136,11 @@ patchWindow = (win)->
       if element instanceof VNode
         return {
           getPropertyValue: (property)->
-            styleStr = element.properties.style
-            if styleStr?
-              styles = styleStr.split ';'
-              for style in styles
-                styleTokens = style.split ':'
-                if styleTokens[0] == property
-                  return styleTokens[1]
-            return
+            propRE = new RegExp property + '\\s*?:\\s*(.*?)\\s*(;|$)'
+            value = element.properties.style.match propRE
+            if value?
+              return value[1]
+            return undefined
         }
       else
         return nativeGetComputedStyle(element, pseudo)

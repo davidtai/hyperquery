@@ -39,8 +39,33 @@ describe 'patch', ->
       top = Zepto(style).css 'top'
       expect(display).to.eql 'table'
       expect(top).to.eql '100px'
+
+    it 'should add removeStyle shim to vdom', ->
+      css = h 'div', style: 'display:table;top:100px;background: red'
+      #surrounded by other props
+      Zepto(css).css 'top', ''
+      top = Zepto(css).css 'top'
+      expect(top).to.eql undefined
+      #malformed
+      Zepto(css).css 'background', ''
+      bg = Zepto(css).css 'background'
+      expect(bg).to.eql undefined
+      #ideal
+      Zepto(css).css 'display', ''
+      display = Zepto(css).css 'display'
+      expect(display).to.eql undefined
+
+    it 'should add style.cssText to vdom', ->
+      css = h 'div', style: 'background: red'
+      Zepto(css).css 'display', 'none'
+      display = Zepto(css).css 'display'
+      expect(display).to.eql 'none'
+      bg = Zepto(css).css 'background'
+      expect(bg).to.eql 'red'
+
   else
     it.skip 'should patch getComputedStyle on window', ->
+    it.skip 'should add removeStyle shim to vdom', ->
 
   it 'should add setAttribute shim to vdom', ->
     $node = Zepto(tree).find '.attr1'
