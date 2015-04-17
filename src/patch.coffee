@@ -107,6 +107,26 @@ patch = ->
     setupShimValues newElement
     setupShimValues @
 
+    return newElement
+
+  VNode::appendChild = (node)->
+    @children.push node
+    setupShimValues node
+    setupShimValues @
+
+    return node
+
+  VNode::removeChild = (node)->
+    i = 0
+    for child in @children
+      if child == node
+        @children.splice i, 1
+        setupShimValues node
+        setupShimValues @
+        return node
+      i++
+    throw new Error('Node is not a child')
+
   originalH = h
   h = require('virtual-dom/h').h = (tagName, properties, children)->
     node = originalH(tagName, properties, children)

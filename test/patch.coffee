@@ -66,6 +66,7 @@ describe 'patch', ->
   else
     it.skip 'should patch getComputedStyle on window', ->
     it.skip 'should add removeStyle shim to vdom', ->
+    it.skip 'should add style.cssText to vdom', ->
 
   it 'should add setAttribute shim to vdom', ->
     $node = Zepto(tree).find '.attr1'
@@ -94,3 +95,11 @@ describe 'patch', ->
     expect($li[0].parentNode).to.eq $node[0]
     expect($li[0].nextSibling.tagName).to.eq 'DIV'
     expect($node[0].children.length).to.eq 2
+
+  it 'should add removeChild shim to vdom', ->
+    dumbTree = h 'ul', [h 'li']
+    $node = Zepto(dumbTree).find 'li'
+    $node2 = $node.remove()
+    $node3 = Zepto(dumbTree).find 'li'
+    expect($node[0]).to.eq $node2[0]
+    expect($node3[0]).to.eq undefined
