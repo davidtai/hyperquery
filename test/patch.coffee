@@ -63,4 +63,9 @@ describe 'patch', ->
   it 'should support adjacency operators', ->
     $node = Zepto(tree).find 'ul'
     $node.append h 'li'
-    console.log $node
+    $node.append h 'div'
+
+    $li = $node.find 'li'
+    expect($li[0].parentNode).to.eq $node[0]
+    expect($li[0].nextSibling.tagName).to.eq 'DIV'
+    expect($node[0].children.length).to.eq 2

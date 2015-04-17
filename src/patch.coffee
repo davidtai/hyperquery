@@ -84,19 +84,23 @@ patch = ->
       cssText: node.properties.style || ''
     node.firstChild = node.children[0]
     node.lastChild = node.children[node.children.length - 1]
-    for i, child of node.children
+    i = 0
+    for child in node.children
       child.parentNode = node
       child.nextSibling = node.children[i+1]
       child.previousSibling = node.children[i-1]
+      i++
 
   VNode::insertBefore = (newElement, referenceElement)->
     if !referenceElement?
       @children.push newElement
     else
-      for i, child of @children
+      i = 0
+      for child in @children
         if child == referenceElement
           parentNode.children.splice i, 0, newElement
           break
+        i++
     setupShimValues newElement
     setupShimValues @
 
