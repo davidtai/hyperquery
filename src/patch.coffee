@@ -9,8 +9,13 @@ qsaSupportedRe = /^[#.][\w-]*$/
 
 patch = ->
   # Always an element node
-  VNode::nodeType = 1
-  VNode::style = {}
+  VNode::nodeType           = 1
+  VNode::style              = {}
+  VNode::parentNode         = null
+  VNode::nextSibling        = null
+  VNode::previousSibling    = null
+  VNode::firstChild         = null
+  VNode::lastChild          = null
 
   VNode::createElement = (type) ->
     h type
@@ -72,6 +77,32 @@ patch = ->
     for k,v of @
       node[k] = v
 
+    return node
+
+  setupShimValues= (node)->
+    node.style =
+      cssText: node.properties.style || ''
+    node.firstChild = node.children[0]
+    node.lastChild = node.children[node.children.length - 1]
+    for i, child of node.children
+      child.parentNode = node
+      child.nextSibling = node.children[i+1]
+      child.previousSibling = node.children[i-1]
+
+  VNode::insertBefore = (newElement, referenceElement)->
+    parentNode = referenceElement.parentNode
+    if parentNode?
+      for i, child of parentNode.children
+        if child == referenceElement
+          parentNode.children.splice i, newElement
+          break
+    setupShimValues newElement
+    setupShimValues parentNode
+
+  originalH = h
+  h = require('virtual-dom/h').h = (tagName, properties, children)->
+    node = originalH(tagName, properties, children)
+    setupShimValues(node)
     return node
 
 patch$ = ($)->
