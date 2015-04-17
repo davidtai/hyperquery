@@ -90,14 +90,15 @@ patch = ->
       child.previousSibling = node.children[i-1]
 
   VNode::insertBefore = (newElement, referenceElement)->
-    parentNode = referenceElement.parentNode
-    if parentNode?
-      for i, child of parentNode.children
+    if !referenceElement?
+      @children.push newElement
+    else
+      for i, child of @children
         if child == referenceElement
-          parentNode.children.splice i, newElement
+          parentNode.children.splice i, 0, newElement
           break
     setupShimValues newElement
-    setupShimValues parentNode
+    setupShimValues @
 
   originalH = h
   h = require('virtual-dom/h').h = (tagName, properties, children)->
